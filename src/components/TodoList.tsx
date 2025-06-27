@@ -3,7 +3,7 @@ import React from 'react';
 import { Todo } from '../types/Todo';
 import { TodoItem } from './TodoItem';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
-import { TEMP_TODO_ID } from '../appConstants/appConstants';
+import { TEMP_TODO_ID } from '../constants/appConstants';
 
 type Props = {
   todos: Todo[];

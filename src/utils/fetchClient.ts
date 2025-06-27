@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { BASE_URL } from '../appConstants/appConstants';
+import { BASE_URL } from '../constants/appConstants';
 
 // returns a promise resolved after a given delay
 function wait(delay: number) {

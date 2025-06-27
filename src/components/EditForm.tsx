@@ -1,17 +1,28 @@
-import React, { useEffect, useRef, forwardRef } from 'react';
-import { ESCAPE_KEY } from '../appConstants/appConstants';
+import React, { useEffect, forwardRef } from 'react';
+import { ESCAPE_KEY } from '../constants/appConstants';
+import { focusInputField } from '../utils/focus';
 
 type Props = {
   value: string;
   onValueChange: (value: string) => void;
   onSubmit: () => void;
   changeEditing: (editing: boolean) => void;
+  didSubmitRef: React.MutableRefObject<boolean>;
+  editInputRef: React.RefObject<HTMLInputElement>;
 };
 
 export const EditForm = forwardRef<HTMLInputElement, Props>(
-  ({ value, onValueChange, onSubmit, changeEditing }, ref) => {
-    const didSubmitRef = useRef(false);
-
+  (
+    {
+      value,
+      onValueChange,
+      onSubmit,
+      changeEditing,
+      didSubmitRef,
+      editInputRef,
+    },
+    ref,
+  ) => {
     useEffect(() => {
       const handleKeyUp = (event: KeyboardEvent) => {
         if (event.key === ESCAPE_KEY) {
@@ -29,15 +40,15 @@ export const EditForm = forwardRef<HTMLInputElement, Props>(
     const handleSubmit = (event: React.FormEvent) => {
       event.preventDefault();
 
-      didSubmitRef.current = true;
-
       onSubmit();
     };
 
     const handleBlur = () => {
       if (!didSubmitRef.current) {
-        onSubmit();
+        focusInputField(editInputRef);
       }
+
+      onSubmit();
     };
 
     return (

@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
-import cn from 'classnames';
 import { UserWarning } from './components/UserWarning';
+import cn from 'classnames';
 import { Todo } from './types/Todo';
 import * as todoService from './api/todos';
 import { getTodoStats } from './utils/todoStats';
@@ -15,19 +15,18 @@ import {
   ERROR_TIMEOUT_MS,
   TEMP_TODO_ID,
   USER_ID,
-} from './appConstants/appConstants';
+} from './constants/appConstants';
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [errorMessage, setErrorMessage] = useState<ErrorMessageType>(
     ErrorMessageType.None,
   );
-  const [errorVersion, setErrorVersion] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [filter, setFilter] = useState<FilterType>(FilterType.All);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [activeTodoId, setActiveTodoId] = useState<number | null>(null);
-
+  const [errorVersion, setErrorVersion] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -48,6 +47,7 @@ export const App: React.FC = () => {
     }
 
     const currentVersion = errorVersion;
+
     const timeoutId = setTimeout(() => {
       setErrorMessage(prev =>
         errorVersion === currentVersion ? ErrorMessageType.None : prev,
@@ -104,16 +104,17 @@ export const App: React.FC = () => {
 
     return todoService
       .deleteTodo(todoId)
-      .then(() =>
-        setTodos(current => current.filter(todo => todo.id !== todoId)),
-      )
+      .then(() => {
+        setTodos(current => current.filter(todo => todo.id !== todoId));
+        focusInputField(inputRef);
+      })
       .catch(error => {
         showError(ErrorMessageType.Delete);
         throw error;
       })
       .finally(() => {
-        setIsLoading(false);
         setActiveTodoId(null);
+        setIsLoading(false);
       });
   };
 
@@ -151,9 +152,9 @@ export const App: React.FC = () => {
       .filter(res => res.status === 'fulfilled')
       .map(res => (res as PromiseFulfilledResult<number>).value);
 
-    const hasErrors = results.some(res => res.status === 'rejected');
+    const hasError = results.some(res => res.status === 'rejected');
 
-    if (hasErrors) {
+    if (hasError) {
       showError(ErrorMessageType.Delete);
     }
 
@@ -187,7 +188,9 @@ export const App: React.FC = () => {
       )
       .filter(Boolean) as Todo[];
 
-    if (results.some(res => res.status === 'rejected')) {
+    const hasError = results.some(res => res.status === 'rejected');
+
+    if (hasError) {
       showError(ErrorMessageType.Update);
     }
 
@@ -211,7 +214,7 @@ export const App: React.FC = () => {
           handleError={showError}
           onToggle={toggleAllTodos}
           inputRef={inputRef}
-          loading={isLoading}
+          isLoading={isLoading}
           isAllCompleted={isAllTodosCompleted}
           todosCount={allTodosCount}
         />

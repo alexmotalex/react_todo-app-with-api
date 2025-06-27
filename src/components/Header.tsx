@@ -2,14 +2,14 @@ import React, { RefObject, useState } from 'react';
 import { ErrorMessageType } from '../constants/ErrorMessageType';
 import { Todo } from '../types/Todo';
 import cn from 'classnames';
-import { DEFAULT_COMPLETED, USER_ID } from '../appConstants/appConstants';
+import { DEFAULT_COMPLETED, USER_ID } from '../constants/appConstants';
 
 type Props = {
   onSubmit: (newTodo: Omit<Todo, 'id'>) => Promise<void>;
   handleError: (error: ErrorMessageType) => void;
   onToggle: () => void;
   inputRef: RefObject<HTMLInputElement>;
-  loading: boolean;
+  isLoading: boolean;
   isAllCompleted: boolean;
   todosCount: number;
 };
@@ -19,7 +19,7 @@ export const Header: React.FC<Props> = ({
   handleError,
   onToggle,
   inputRef,
-  loading,
+  isLoading,
   isAllCompleted,
   todosCount,
 }) => {
@@ -42,7 +42,9 @@ export const Header: React.FC<Props> = ({
       title: prepearedInputValue,
       completed: DEFAULT_COMPLETED,
       userId: USER_ID,
-    }).then(() => setTodoInput(''));
+    })
+      .then(() => setTodoInput(''))
+      .catch(() => setTodoInput(prepearedInputValue));
   };
 
   const isToggleAllVisible = todosCount > 0;
@@ -67,7 +69,7 @@ export const Header: React.FC<Props> = ({
           placeholder="What needs to be done?"
           value={todoInput}
           onChange={e => setTodoInput(e.target.value)}
-          disabled={loading}
+          disabled={isLoading}
         />
       </form>
     </header>

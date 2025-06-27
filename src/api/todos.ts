@@ -1,4 +1,4 @@
-import { USER_ID } from '../appConstants/appConstants';
+import { USER_ID } from '../constants/appConstants';
 import { Todo } from '../types/Todo';
 import { client } from '../utils/fetchClient';
 

@@ -1,4 +1,5 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
+
 import React, { useRef, useState } from 'react';
 import { Todo } from '../types/Todo';
 import { EditForm } from './EditForm';
@@ -21,6 +22,7 @@ export const TodoItem: React.FC<Props> = ({
   const [isEditing, setIsEditing] = useState(false);
   const [editedTitle, setEditedTitle] = useState('');
 
+  const didSubmitRef = useRef(false);
   const editInputRef = useRef(null);
 
   const { completed, id, title } = todo;
@@ -31,15 +33,17 @@ export const TodoItem: React.FC<Props> = ({
   };
 
   const handleEditSubmit = () => {
-    const currentEditingValue = editedTitle.trim();
+    didSubmitRef.current = true;
 
-    if (currentEditingValue === title) {
+    const trimmedTitle = editedTitle.trim();
+
+    if (trimmedTitle === title) {
       setIsEditing(false);
 
       return;
     }
 
-    if (!currentEditingValue) {
+    if (!trimmedTitle) {
       onDelete(id).catch(() => {
         setIsEditing(true);
         focusInputField(editInputRef);
@@ -49,9 +53,7 @@ export const TodoItem: React.FC<Props> = ({
       return;
     }
 
-    onUpdate({ ...todo, title: currentEditingValue }).then(() =>
-      setIsEditing(false),
-    );
+    onUpdate({ ...todo, title: trimmedTitle }).then(() => setIsEditing(false));
   };
 
   const isActive = todo.id === activeTodoId;
@@ -75,6 +77,8 @@ export const TodoItem: React.FC<Props> = ({
           onValueChange={setEditedTitle}
           onSubmit={handleEditSubmit}
           changeEditing={setIsEditing}
+          didSubmitRef={didSubmitRef}
+          editInputRef={editInputRef}
         />
       ) : (
         <>
